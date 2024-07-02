@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import { UserContext } from "../contexts/LoggedInUser.context";
 
 function makeid(length = 5) {
   let result = "";
@@ -17,6 +18,8 @@ function makeid(length = 5) {
 }
 
 function CreationPage() {
+  const { loggedInUser } = useContext(UserContext); // Use the UserContext
+  const userProductsArray = loggedInUser.products;
   const categories = [
     "Electronics",
     "Automotive",
@@ -33,7 +36,8 @@ function CreationPage() {
     name: "",
     price: "",
     quantity: "",
-    category: "",
+    categories: [""],
+    user: `${loggedInUser._id}`,
   });
 
   const handleInputChange = (event) => {
@@ -49,15 +53,20 @@ function CreationPage() {
       name: formData.name,
       price: formData.price,
       quantity: formData.quantity,
-      category: formData.category,
+      categories: [formData.category],
+      user: `${loggedInUser._id}`,
     };
 
     try {
+      console.log(newProduct);
       const response = await axios.post(
         "http://localhost:3000/api/product/create",
         newProduct
       );
       console.log("Product creation successful:", response.data);
+      userProductsArray.push(response.data.product._id);
+      console.log(userProductsArray);
+      addProductToUser(); // Add the new product to the user's products array in the database
       navigate("/product"); // Navigate back to home page after successful creation
     } catch (error) {
       console.error("Error creating product:", error);
@@ -65,6 +74,17 @@ function CreationPage() {
     }
   };
 
+  async function addProductToUser() {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3000/api/auth/product/add/${loggedInUser._id}`,
+        { products: userProductsArray }
+      );
+      console.log("Product was added succesfully to user:", response.data);
+    } catch (error) {
+      console.error("Error updating user with new products:", error);
+    }
+  }
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">

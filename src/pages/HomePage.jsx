@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { UserContext } from "../contexts/LoggedInUser.context";
 
 const HomePage = () => {
+  const { loggedInUser } = useContext(UserContext);
+  console.log(loggedInUser);
   return (
     <div className="bg-gray-100 min-h-screen">
       <header

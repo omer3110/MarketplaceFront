@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ProductsPage from "./ProductsPage";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
+import axios from "axios";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -15,17 +16,24 @@ function LoginPage() {
     setFormData({ ...formData, [name]: value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log("Form Data:", formData);
-    navigate("/product");
-    // For now, just log the form data to the console
-    // In a real application, you would send this data to your backend server for authentication
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        formData
+      );
+      console.log("User token is:", response.data.token);
+      localStorage.setItem("token", response.data.token);
+      navigate("/product");
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
   }
 
   return (
     <>
-      <div className=" p-4 absolute top-10 right-0">
+      <div className="z-50 p-4 absolute top-10 right-0">
         <form
           onSubmit={handleSubmit}
           className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
@@ -33,10 +41,7 @@ function LoginPage() {
           <h2 className="text-2xl font-bold mb-4">Login</h2>
           <p>
             Don't have account yet?{" "}
-            <Link
-              to="/product/register"
-              className=" cursor-pointer text-blue-700"
-            >
+            <Link to="/register" className=" cursor-pointer text-blue-700">
               register
             </Link>
           </p>

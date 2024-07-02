@@ -18,13 +18,11 @@ function RegisterPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    console.log("Form Data:", formData);
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/create",
+        "http://localhost:3000/api/auth/register",
         formData
       );
-      console.log("User creation successful:", response.data);
       navigate("/product"); // Navigate back to home page after successful creation
     } catch (error) {
       console.error("Error creating user:", error);

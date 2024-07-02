@@ -9,7 +9,7 @@ import categoryShoes from "../images/categoryShoes.png";
 import categorySports from "../images/categorySports.jpeg";
 import categoryClothing from "../images/categoryClothing.jpeg";
 
-const categories = [
+const allCategories = [
   "Electronics",
   "Automotive",
   "Guns",
@@ -74,8 +74,18 @@ const ProductDetailPage = () => {
     setEditedProduct({ ...editedProduct, [name]: value });
   };
 
+  const handleCategoryChange = (e) => {
+    const { options } = e.target;
+    const selectedCategories = [];
+    for (const option of options) {
+      if (option.selected) {
+        selectedCategories.push(option.value);
+      }
+    }
+    setEditedProduct({ ...editedProduct, categories: selectedCategories });
+  };
+
   const handleSave = () => {
-    console.log(editedProduct);
     axios
       .patch(`http://localhost:3000/api/product/edit/${id}`, editedProduct)
       .then((response) => {
@@ -101,8 +111,9 @@ const ProductDetailPage = () => {
       <div className="bg-white shadow-md rounded-lg overflow-hidden mx-40">
         <img
           src={
-            categoryImages[product.category] ||
-            `https://via.placeholder.com/150?text=${product.name}`
+            product.categories.length > 0
+              ? categoryImages[product.categories[0]]
+              : `https://via.placeholder.com/150?text=${product.name}`
           }
           alt={product.name}
           className="w-full h-48 object-cover"
@@ -153,28 +164,28 @@ const ProductDetailPage = () => {
             )}
           </p>
           <p className="text-gray-500">
-            Category:{" "}
+            Categories:{" "}
             {isEditing ? (
               <select
                 className="w-full px-3 py-2 border rounded-md"
-                id="category"
-                name="category"
-                value={editedProduct.category}
-                onChange={handleInputChange}
-                required
+                id="categories"
+                name="categories"
+                value={editedProduct.categories}
+                onChange={handleCategoryChange}
+                multiple
               >
-                {categories.map((category) => (
+                {allCategories.map((category) => (
                   <option key={category} value={category}>
                     {category}
                   </option>
                 ))}
               </select>
             ) : (
-              product.category
+              product.categories.join(", ")
             )}
           </p>
           <p className="text-gray-500">
-            Quantity:{" "}
+            Quantity:
             {isEditing ? (
               <input
                 type="number"

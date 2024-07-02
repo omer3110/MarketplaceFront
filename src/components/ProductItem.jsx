@@ -8,34 +8,39 @@ import categoryShoes from "../images/categoryShoes.png";
 import categorySports from "../images/categorySports.jpeg";
 import categoryClothing from "../images/categoryClothing.jpeg";
 
-const ProductItem = ({ product }) => {
-  const categoryImages = {
-    Automotive: categoryAuto,
-    Electronics: categoryElectronics,
-    Guns: categoryGuns,
-    Jewelry: categoryJewelry,
-    Shoes: categoryShoes,
-    Sports: categorySports,
-    Clothing: categoryClothing,
-    // Add other categories and their corresponding images here
-  };
+const categoryImages = {
+  Automotive: categoryAuto,
+  Electronics: categoryElectronics,
+  Guns: categoryGuns,
+  Jewelry: categoryJewelry,
+  Shoes: categoryShoes,
+  Sports: categorySports,
+  Clothing: categoryClothing,
+  // Add other categories and their corresponding images here
+};
 
+const ProductItem = ({ product }) => {
   const navigate = useNavigate();
+
+  // Determine the image to display based on the first category
+  const firstCategoryImage =
+    product.categories.length > 0
+      ? categoryImages[product.categories[0]]
+      : `https://via.placeholder.com/150?text=${product.name}`;
 
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <img
-        src={
-          categoryImages[product.category] ||
-          `https://via.placeholder.com/150?text=${product.name}`
-        }
+        src={firstCategoryImage}
         alt={product.name}
         className="w-full h-48 object-cover"
       />
       <div className="p-4">
         <h2 className="text-xl font-bold">{product.name}</h2>
         <p className="text-gray-700">Price: ${product.price}</p>
-        <p className="text-gray-500">Category: {product.category}</p>
+        <p className="text-gray-500">
+          Categories: {product.categories.join(", ")}
+        </p>
         <button
           id={product._id}
           onClick={() => navigate(`/product/${product._id}`)}
